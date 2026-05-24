@@ -1,9 +1,6 @@
 import { createContext, useContext, useEffect } from 'react'
 import { useLocalStorage } from '../hooks/useLocalStorage'
-import {
-  sampleClients, sampleProjects, sampleFinancial,
-  sampleEvents, samplePipeline, defaultSettings,
-} from '../data/sampleData'
+import { defaultSettings } from '../data/sampleData'
 
 const AppContext = createContext(null)
 
@@ -11,11 +8,11 @@ const generateId = () => `${Date.now()}_${Math.random().toString(36).substr(2, 9
 const today = () => new Date().toISOString().split('T')[0]
 
 export function AppProvider({ children }) {
-  const [clients, setClients] = useLocalStorage('crm_clients', sampleClients)
-  const [projects, setProjects] = useLocalStorage('crm_projects', sampleProjects)
-  const [financial, setFinancial] = useLocalStorage('crm_financial', sampleFinancial)
-  const [events, setEvents] = useLocalStorage('crm_events', sampleEvents)
-  const [pipeline, setPipeline] = useLocalStorage('crm_pipeline', samplePipeline)
+  const [clients, setClients] = useLocalStorage('crm_clients', [])
+  const [projects, setProjects] = useLocalStorage('crm_projects', [])
+  const [financial, setFinancial] = useLocalStorage('crm_financial', [])
+  const [events, setEvents] = useLocalStorage('crm_events', [])
+  const [pipeline, setPipeline] = useLocalStorage('crm_pipeline', [])
   const [settings, setSettings] = useLocalStorage('crm_settings', defaultSettings)
 
   // Clients
