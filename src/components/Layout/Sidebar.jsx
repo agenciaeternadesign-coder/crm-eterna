@@ -8,7 +8,7 @@ import { useApp } from '../../context/AppContext'
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/clients', icon: Users, label: 'Clientes' },
-  { path: '/projects', icon: FolderKanban, label: 'Projetos' },
+  { path: '/projects', icon: FolderKanban, label: 'Propostas' },
   { path: '/financial', icon: Wallet, label: 'Financeiro' },
   { path: '/calendar', icon: CalendarDays, label: 'Agenda' },
   { path: '/pipeline', icon: TrendingUp, label: 'Pipeline' },

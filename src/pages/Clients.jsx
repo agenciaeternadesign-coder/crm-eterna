@@ -4,7 +4,7 @@ import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
 
-const SEGMENTS = ['Varejo', 'Tecnologia', 'Saúde e Bem-estar', 'Construção', 'Alimentação', 'Jurídico', 'Marketing', 'Educação', 'Beleza e Estética', 'Moda', 'Outro']
+const SEGMENTS = ['Salão de Beleza', 'Clínica de Estética', 'Spa', 'Studio de Unhas', 'Studio de Maquiagem', 'Barbearia', 'Instituto de Beleza', 'Farmácia/Parafarmácia', 'Distribuidor', 'Outro']
 
 const emptyForm = {
   name: '', company: '', email: '', phone: '',
@@ -46,32 +46,11 @@ export default function Clients() {
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
 
   const tipoConfig = {
-    cliente: { label: 'Cliente', color: '#3b82f6' },
-    aluna: { label: 'Aluna', color: '#8b5cf6' },
+    cliente: { label: 'Cliente', color: '#EC4899' },
   }
-
-  const countClientes = clients.filter(c => c.tipo === 'cliente').length
-  const countAlunas = clients.filter(c => c.tipo === 'aluna').length
 
   return (
     <div className="max-w-7xl mx-auto space-y-5">
-      {/* Type summary chips */}
-      <div className="flex gap-3 flex-wrap">
-        {[
-          { id: 'todos', label: `Todos (${clients.length})`, color: pc },
-          { id: 'cliente', label: `Clientes (${countClientes})`, color: '#3b82f6' },
-          { id: 'aluna', label: `Alunas (${countAlunas})`, color: '#8b5cf6' },
-        ].map(chip => (
-          <button
-            key={chip.id}
-            onClick={() => setFilterTipo(chip.id)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-all border ${filterTipo === chip.id ? 'text-white border-transparent shadow-sm' : 'text-slate-600 border-slate-200 bg-white hover:border-slate-300'}`}
-            style={filterTipo === chip.id ? { backgroundColor: chip.color, borderColor: chip.color } : {}}
-          >
-            {chip.label}
-          </button>
-        ))}
-      </div>
 
       {/* Toolbar */}
       <div className="flex flex-col sm:flex-row gap-3">
@@ -181,27 +160,6 @@ export default function Clients() {
       {/* Add/Edit Modal */}
       <Modal isOpen={modal} onClose={() => setModal(false)} title={editing ? 'Editar Contacto' : 'Novo Contacto'} size="md">
         <div className="space-y-4">
-          {/* Tipo toggle */}
-          <div>
-            <label className="block text-xs font-medium text-slate-600 mb-2">Tipo de Contacto</label>
-            <div className="grid grid-cols-2 gap-2">
-              {[
-                { id: 'cliente', label: '👤 Cliente', color: '#3b82f6' },
-                { id: 'aluna', label: '🎓 Aluna', color: '#8b5cf6' },
-              ].map(t => (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setForm(f => ({ ...f, tipo: t.id }))}
-                  className={`py-2.5 text-sm rounded-xl border-2 font-medium transition-all ${form.tipo === t.id ? 'text-white border-transparent' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
-                  style={form.tipo === t.id ? { backgroundColor: t.color, borderColor: t.color } : {}}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <div className="grid grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Nome *</label>
@@ -247,7 +205,7 @@ export default function Clients() {
               className="flex-1 py-2.5 text-sm rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-40"
               style={{ backgroundColor: tipoConfig[form.tipo]?.color || pc }}
             >
-              {editing ? 'Salvar Alterações' : (form.tipo === 'aluna' ? 'Adicionar Aluna' : 'Adicionar Cliente')}
+              {editing ? 'Salvar Alterações' : 'Adicionar Cliente'}
             </button>
           </div>
         </div>

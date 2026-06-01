@@ -1,49 +1,37 @@
 import { useState } from 'react'
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
-import { Plus, Pencil, Trash2, TrendingUp, Users, GraduationCap } from 'lucide-react'
+import { Plus, Pencil, Trash2, TrendingUp } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 
 const fmt = (v) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
 
-const STAGES_CLIENTE = [
-  { id: 'c_lead', label: 'Lead', color: '#64748b' },
-  { id: 'c_contato', label: 'Contacto', color: '#3b82f6' },
-  { id: 'c_agendamento', label: 'Agendamento', color: '#8b5cf6' },
-  { id: 'c_atendida', label: 'Atendida', color: '#f59e0b' },
-  { id: 'c_fidelizada', label: 'Fidelizada', color: '#10b981' },
-  { id: 'c_perdida', label: 'Perdida', color: '#ef4444' },
+const STAGES = [
+  { id: 'lead', label: 'Lead', color: '#64748b' },
+  { id: 'contactado', label: 'Contactado', color: '#3b82f6' },
+  { id: 'reuniao_marcada', label: 'Reunião Marcada', color: '#8b5cf6' },
+  { id: 'proposta_enviada', label: 'Proposta Enviada', color: '#f59e0b' },
+  { id: 'negociacao', label: 'Negociação', color: '#f97316' },
+  { id: 'ganho', label: 'Cliente Ganho', color: '#10b981' },
+  { id: 'perdido', label: 'Cliente Perdido', color: '#ef4444' },
 ]
 
-const STAGES_ALUNA = [
-  { id: 'a_lead', label: 'Lead', color: '#64748b' },
-  { id: 'a_interessada', label: 'Interessada', color: '#3b82f6' },
-  { id: 'a_proposta', label: 'Proposta Enviada', color: '#8b5cf6' },
-  { id: 'a_inscrita', label: 'Inscrita', color: '#f59e0b' },
-  { id: 'a_concluida', label: 'Formação Concluída', color: '#10b981' },
-  { id: 'a_desistiu', label: 'Desistiu', color: '#ef4444' },
-]
+const WON_STAGE = 'ganho'
+const LOST_STAGE = 'perdido'
 
-const WON = { cliente: 'c_fidelizada', aluna: 'a_concluida' }
-const LOST = { cliente: 'c_perdida', aluna: 'a_desistiu' }
-
-const emptyForm = { title: '', clientName: '', value: '', stage: 'c_lead', tipo: 'cliente', notes: '' }
+const emptyForm = { title: '', clientName: '', value: '', stage: 'lead', tipo: 'cliente', notes: '' }
 
 export default function Pipeline() {
   const { pipeline, addPipelineCard, updatePipelineCard, deletePipelineCard, settings } = useApp()
-  const pc = settings.primaryColor || '#7C3AED'
+  const pc = settings.primaryColor || '#EC4899'
 
-  const [mode, setMode] = useState('cliente')
   const [modal, setModal] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [confirmDelete, setConfirmDelete] = useState(null)
 
-  const stages = mode === 'cliente' ? STAGES_CLIENTE : STAGES_ALUNA
-  const cards = pipeline.filter(p => p.tipo === mode)
-
-  const activeCards = cards.filter(p => p.stage !== WON[mode] && p.stage !== LOST[mode])
-  const wonCards = cards.filter(p => p.stage === WON[mode])
+  const activeCards = pipeline.filter(p => p.stage !== WON_STAGE && p.stage !== LOST_STAGE)
+  const wonCards = pipeline.filter(p => p.stage === WON_STAGE)
 
   const totalActive = activeCards.reduce((s, p) => s + p.value, 0)
   const totalWon = wonCards.reduce((s, p) => s + p.value, 0)
@@ -55,9 +43,8 @@ export default function Pipeline() {
   }
 
   const openAdd = (stage) => {
-    const defaultStage = stage || (mode === 'cliente' ? 'c_lead' : 'a_lead')
     setEditing(null)
-    setForm({ ...emptyForm, tipo: mode, stage: defaultStage })
+    setForm({ ...emptyForm, stage: stage || 'lead' })
     setModal(true)
   }
 
@@ -79,29 +66,8 @@ export default function Pipeline() {
 
   return (
     <div className="max-w-full space-y-5">
-      {/* Mode toggle + summary */}
+      {/* Summary */}
       <div className="flex flex-wrap items-center gap-3">
-        {/* Mode toggle */}
-        <div className="flex bg-white border border-slate-200 rounded-xl p-1 gap-1">
-          <button
-            onClick={() => setMode('cliente')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'cliente' ? 'text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            style={mode === 'cliente' ? { backgroundColor: '#3b82f6' } : {}}
-          >
-            <Users size={16} />
-            Clientes
-          </button>
-          <button
-            onClick={() => setMode('aluna')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${mode === 'aluna' ? 'text-white shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-            style={mode === 'aluna' ? { backgroundColor: '#8b5cf6' } : {}}
-          >
-            <GraduationCap size={16} />
-            Alunas
-          </button>
-        </div>
-
-        {/* Summary cards */}
         <div className="flex gap-3 flex-wrap flex-1">
           <div className="bg-white rounded-xl border border-slate-100 px-4 py-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${pc}18` }}>
@@ -117,17 +83,17 @@ export default function Pipeline() {
               <span className="text-emerald-600 text-xs font-bold">✓</span>
             </div>
             <div>
-              <p className="text-xs text-slate-500">{mode === 'cliente' ? 'Fidelizadas' : 'Concluídas'}</p>
+              <p className="text-xs text-slate-500">Clientes Ganhos</p>
               <p className="font-bold text-emerald-600 text-sm">{fmt(totalWon)}</p>
             </div>
           </div>
           <div className="bg-white rounded-xl border border-slate-100 px-4 py-3 flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center">
-              <span className="text-slate-500 text-xs font-bold">{cards.length}</span>
+              <span className="text-slate-500 text-xs font-bold">{pipeline.length}</span>
             </div>
             <div>
               <p className="text-xs text-slate-500">Total de Cards</p>
-              <p className="font-bold text-slate-800 text-sm">{activeCards.length} ativas</p>
+              <p className="font-bold text-slate-800 text-sm">{activeCards.length} activos</p>
             </div>
           </div>
         </div>
@@ -135,7 +101,7 @@ export default function Pipeline() {
         <button
           onClick={() => openAdd()}
           className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium text-white hover:opacity-90"
-          style={{ backgroundColor: mode === 'cliente' ? '#3b82f6' : '#8b5cf6' }}
+          style={{ backgroundColor: pc }}
         >
           <Plus size={16} />
           Novo Card
@@ -145,8 +111,8 @@ export default function Pipeline() {
       {/* Kanban */}
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-4 overflow-x-auto pb-4">
-          {stages.map(stage => {
-            const stageCards = cards.filter(p => p.stage === stage.id)
+          {STAGES.map(stage => {
+            const stageCards = pipeline.filter(p => p.stage === stage.id)
             const stageValue = stageCards.reduce((s, p) => s + p.value, 0)
 
             return (
@@ -233,15 +199,15 @@ export default function Pipeline() {
       </DragDropContext>
 
       {/* Modal */}
-      <Modal isOpen={modal} onClose={() => setModal(false)} title={editing ? 'Editar Card' : `Novo Card — ${mode === 'cliente' ? 'Cliente' : 'Aluna'}`} size="sm">
+      <Modal isOpen={modal} onClose={() => setModal(false)} title={editing ? 'Editar Card' : 'Novo Card'} size="sm">
         <div className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Título *</label>
-            <input value={form.title} onChange={set('title')} placeholder={mode === 'cliente' ? 'Ex: Branding Completo' : 'Ex: Formação Esteticista Avançada'} className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">Oportunidade *</label>
+            <input value={form.title} onChange={set('title')} placeholder="Ex: Kit Capilar Premium, Equipamento Laser..." className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">{mode === 'cliente' ? 'Cliente / Empresa' : 'Nome da Aluna'} *</label>
-            <input value={form.clientName} onChange={set('clientName')} placeholder="Nome completo" className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">Cliente / Empresa *</label>
+            <input value={form.clientName} onChange={set('clientName')} placeholder="Nome do cliente ou empresa" className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -251,7 +217,7 @@ export default function Pipeline() {
             <div>
               <label className="block text-xs font-medium text-slate-600 mb-1.5">Etapa</label>
               <select value={form.stage} onChange={set('stage')} className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none bg-white">
-                {stages.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
+                {STAGES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </div>
           </div>
@@ -265,7 +231,7 @@ export default function Pipeline() {
               onClick={handleSave}
               disabled={!form.title.trim() || !form.clientName.trim() || !form.value}
               className="flex-1 py-2.5 text-sm rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-40"
-              style={{ backgroundColor: mode === 'cliente' ? '#3b82f6' : '#8b5cf6' }}
+              style={{ backgroundColor: pc }}
             >
               {editing ? 'Salvar' : 'Criar Card'}
             </button>

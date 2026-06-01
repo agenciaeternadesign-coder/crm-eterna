@@ -9,7 +9,7 @@ const STATUS_LABELS = { em_andamento: 'Em Andamento', a_fazer: 'A Fazer', conclu
 
 const emptyForm = {
   clientId: '', name: '', description: '',
-  status: 'a_fazer', tipo: 'servico', dueDate: '', responsible: '',
+  status: 'a_fazer', tipo: 'produto', dueDate: '', responsible: '',
 }
 
 export default function Projects() {
@@ -52,19 +52,23 @@ export default function Projects() {
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
   const fmtDate = (d) => d ? d.split('-').reverse().join('/') : null
   const statusBarColor = { em_andamento: '#f59e0b', a_fazer: '#94a3b8', concluido: '#10b981' }
-  const tipoColor = { servico: '#0ea5e9', formacao: '#f97316' }
+  const tipoColor = { produto: '#0ea5e9', equipamento: '#f59e0b', formacao: '#f97316', servico: '#10b981' }
 
-  const countServico = projects.filter(p => p.tipo === 'servico').length
+  const countProduto = projects.filter(p => p.tipo === 'produto').length
+  const countEquipamento = projects.filter(p => p.tipo === 'equipamento').length
   const countFormacao = projects.filter(p => p.tipo === 'formacao').length
+  const countServico = projects.filter(p => p.tipo === 'servico').length
 
   return (
     <div className="max-w-7xl mx-auto space-y-5">
       {/* Type filter chips */}
       <div className="flex gap-3 flex-wrap">
         {[
-          { id: 'todos', label: `Todos (${projects.length})`, color: pc },
-          { id: 'servico', label: `Serviços (${countServico})`, color: '#0ea5e9' },
+          { id: 'todos', label: `Todas (${projects.length})`, color: pc },
+          { id: 'produto', label: `Produtos (${countProduto})`, color: '#0ea5e9' },
+          { id: 'equipamento', label: `Equipamentos (${countEquipamento})`, color: '#f59e0b' },
           { id: 'formacao', label: `Formações (${countFormacao})`, color: '#f97316' },
+          { id: 'servico', label: `Serviços (${countServico})`, color: '#10b981' },
         ].map(chip => (
           <button
             key={chip.id}
@@ -101,14 +105,14 @@ export default function Projects() {
         </div>
       </div>
 
-      <p className="text-sm text-slate-500">{filtered.length} projeto{filtered.length !== 1 ? 's' : ''}</p>
+      <p className="text-sm text-slate-500">{filtered.length} proposta{filtered.length !== 1 ? 's' : ''}</p>
 
       {/* Grouped by status */}
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-slate-400">
           <FolderKanban size={40} strokeWidth={1.5} />
-          <p className="mt-3 font-medium">Nenhum projeto encontrado</p>
-          <button onClick={openAdd} className="mt-4 px-4 py-2 rounded-xl text-sm font-medium text-white" style={{ backgroundColor: pc }}>Criar Projeto</button>
+          <p className="mt-3 font-medium">Nenhuma proposta encontrada</p>
+          <button onClick={openAdd} className="mt-4 px-4 py-2 rounded-xl text-sm font-medium text-white" style={{ backgroundColor: pc }}>Criar Proposta</button>
         </div>
       ) : (
         <div className="space-y-6">
@@ -150,8 +154,8 @@ export default function Projects() {
                               <User size={11} />
                               {client.company || client.name}
                               {client.tipo && (
-                                <span className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style={{ backgroundColor: client.tipo === 'aluna' ? '#8b5cf618' : '#3b82f618', color: client.tipo === 'aluna' ? '#7c3aed' : '#2563eb' }}>
-                                  {client.tipo === 'aluna' ? 'Aluna' : 'Cliente'}
+                                <span className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-medium" style={{ backgroundColor: '#EC489918', color: '#EC4899' }}>
+                                  Cliente
                                 </span>
                               )}
                             </p>
@@ -165,7 +169,7 @@ export default function Projects() {
                         </div>
 
                         <div className="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between">
-                          <Badge type={project.tipo || 'servico'} />
+                          <Badge type={project.tipo || 'produto'} />
                           <button
                             onClick={() => cycleStatus(project)}
                             className="text-xs font-medium px-3 py-1 rounded-lg transition-all hover:opacity-80"
@@ -185,15 +189,17 @@ export default function Projects() {
       )}
 
       {/* Modal */}
-      <Modal isOpen={modal} onClose={() => setModal(false)} title={editing ? 'Editar Projeto' : 'Novo Projeto'} size="md">
+      <Modal isOpen={modal} onClose={() => setModal(false)} title={editing ? 'Editar Proposta' : 'Nova Proposta'} size="md">
         <div className="space-y-4">
           {/* Tipo toggle */}
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-2">Tipo de Projeto</label>
+            <label className="block text-xs font-medium text-slate-600 mb-2">Tipo de Proposta</label>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { id: 'servico', label: '⚡ Serviço', color: '#0ea5e9' },
+                { id: 'produto', label: '🧴 Produto', color: '#0ea5e9' },
+                { id: 'equipamento', label: '⚙️ Equipamento', color: '#f59e0b' },
                 { id: 'formacao', label: '🎓 Formação', color: '#f97316' },
+                { id: 'servico', label: '⚡ Serviço', color: '#10b981' },
               ].map(t => (
                 <button
                   key={t.id}
@@ -209,8 +215,8 @@ export default function Projects() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1.5">Nome do Projeto *</label>
-            <input value={form.name} onChange={set('name')} placeholder="Ex: Formação Esteticista Avançada" className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
+            <label className="block text-xs font-medium text-slate-600 mb-1.5">Nome da Proposta *</label>
+            <input value={form.name} onChange={set('name')} placeholder="Ex: Kit Capilar Premium, Equipamento Laser..." className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">Contacto Vinculado</label>
@@ -244,13 +250,13 @@ export default function Projects() {
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModal(false)} className="flex-1 py-2.5 text-sm border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600">Cancelar</button>
             <button onClick={handleSave} disabled={!form.name.trim()} className="flex-1 py-2.5 text-sm rounded-xl text-white font-medium hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: tipoColor[form.tipo] || pc }}>
-              {editing ? 'Salvar' : 'Criar Projeto'}
+              {editing ? 'Salvar' : 'Criar Proposta'}
             </button>
           </div>
         </div>
       </Modal>
 
-      <Modal isOpen={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Excluir Projeto" size="sm">
+      <Modal isOpen={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Excluir Proposta" size="sm">
         <div className="space-y-4">
           <p className="text-sm text-slate-600">Excluir <strong>{confirmDelete?.name}</strong>?</p>
           <div className="flex gap-3">

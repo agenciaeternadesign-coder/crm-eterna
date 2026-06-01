@@ -7,8 +7,8 @@ import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
 
-const CATEGORIES_IN = ['Serviços de Design', 'Marketing Digital', 'Consultoria', 'Desenvolvimento Web', 'Outro']
-const CATEGORIES_OUT = ['Software e Assinaturas', 'Infraestrutura', 'Marketing', 'Material', 'Serviços Terceiros', 'Educação e Cursos', 'Impostos', 'Outro']
+const CATEGORIES_IN = ['Venda de Produtos', 'Venda de Equipamentos', 'Formações', 'Consultoria', 'Comissões', 'Outro']
+const CATEGORIES_OUT = ['Compra de Produtos', 'Compra de Equipamentos', 'Logística', 'Marketing', 'Software e Assinaturas', 'Administrativo', 'Impostos', 'Outro']
 
 const fmt = (v) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
 const fmtDate = (d) => d ? d.split('-').reverse().join('/') : '-'
