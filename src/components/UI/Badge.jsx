@@ -9,10 +9,11 @@ const styles = {
   entrada: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
   saida: 'bg-red-50 text-red-600 ring-1 ring-red-200',
   // contact types
-  cliente: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
-  aluna: 'bg-violet-50 text-violet-700 ring-1 ring-violet-200',
+  cliente: 'bg-pink-50 text-pink-700 ring-1 ring-pink-200',
   // project types
-  servico: 'bg-sky-50 text-sky-700 ring-1 ring-sky-200',
+  produto: 'bg-sky-50 text-sky-700 ring-1 ring-sky-200',
+  equipamento: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
+  servico: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
   formacao: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
   // legacy pipeline stages (kept for safety)
   leads: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
@@ -26,8 +27,8 @@ const labels = {
   concluido: 'Concluído', em_andamento: 'Em Andamento', a_fazer: 'A Fazer',
   pago: 'Pago', pendente: 'Pendente',
   entrada: 'Entrada', saida: 'Saída',
-  cliente: 'Cliente', aluna: 'Aluna',
-  servico: 'Serviço', formacao: 'Formação',
+  cliente: 'Cliente',
+  produto: 'Produto', equipamento: 'Equipamento', servico: 'Serviço', formacao: 'Formação',
 }
 
 export default function Badge({ type, label, className = '' }) {
