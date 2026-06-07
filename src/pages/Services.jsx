@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Plus, Search, Pencil, Trash2, Scissors, Clock, User } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Scissors, Clock, User, Upload } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
+import ImportModal from '../components/UI/ImportModal'
 
 const STATUS_ORDER = ['em_andamento', 'a_fazer', 'concluido']
 const STATUS_LABELS = { em_andamento: 'Em Andamento', a_fazer: 'A Fazer', concluido: 'Concluído' }
@@ -24,6 +25,7 @@ export default function Services() {
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [confirmDelete, setConfirmDelete] = useState(null)
+  const [importModal, setImportModal] = useState(false)
 
   const filtered = projects.filter(p => {
     const matchSearch = !search || p.name.toLowerCase().includes(search.toLowerCase())
@@ -51,6 +53,12 @@ export default function Services() {
 
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
   const fmtDate = (d) => d ? d.split('-').reverse().join('/') : null
+
+  const handleImport = async (rows) => {
+    for (const row of rows) {
+      await addProject(row)
+    }
+  }
   const statusBarColor = { em_andamento: '#f59e0b', a_fazer: '#94a3b8', concluido: '#10b981' }
   const tipoColor = { servico: '#0ea5e9', formacao: '#f97316' }
 
@@ -99,6 +107,13 @@ export default function Services() {
             <option value="todos">Todos os Contactos</option>
             {clients.map(c => <option key={c.id} value={c.id}>{c.company || c.name}</option>)}
           </select>
+          <button
+            onClick={() => setImportModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all"
+          >
+            <Upload size={16} />
+            <span>Importar</span>
+          </button>
           <button
             onClick={openAdd}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90"
@@ -287,6 +302,14 @@ export default function Services() {
           </div>
         </div>
       </Modal>
+
+      <ImportModal
+        isOpen={importModal}
+        onClose={() => setImportModal(false)}
+        onImport={handleImport}
+        type="service"
+        primaryColor={pc}
+      />
 
       <Modal isOpen={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Excluir Serviço" size="sm">
         <div className="space-y-4">

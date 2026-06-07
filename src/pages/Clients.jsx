@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Search, Plus, Pencil, Trash2, Users, Mail, Phone, Building2 } from 'lucide-react'
+import { Search, Plus, Pencil, Trash2, Users, Mail, Phone, Building2, Upload } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
+import ImportModal from '../components/UI/ImportModal'
 
 const SEGMENTS = [
   'Estética Facial', 'Estética Corporal', 'Nail Designer',
@@ -28,6 +29,7 @@ export default function Clients() {
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState(emptyForm)
   const [confirmDelete, setConfirmDelete] = useState(null)
+  const [importModal, setImportModal] = useState(false)
 
   const filtered = clients.filter(c => {
     const matchSearch = !search || [c.name, c.company, c.email].some(s => s?.toLowerCase().includes(search.toLowerCase()))
@@ -49,6 +51,12 @@ export default function Clients() {
 
   const handleDelete = (id) => { deleteClient(id); setConfirmDelete(null) }
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  const handleImport = async (rows) => {
+    for (const row of rows) {
+      await addClient(row)
+    }
+  }
 
   const tipoConfig = {
     cliente: { label: 'Cliente', color: '#3b82f6' },
@@ -99,6 +107,13 @@ export default function Clients() {
             <option value="todos">Todos os Segmentos</option>
             {SEGMENTS.map(s => <option key={s} value={s}>{s}</option>)}
           </select>
+          <button
+            onClick={() => setImportModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all"
+          >
+            <Upload size={16} />
+            <span>Importar</span>
+          </button>
           <button
             onClick={openAdd}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-white hover:opacity-90"
@@ -257,6 +272,15 @@ export default function Clients() {
           </div>
         </div>
       </Modal>
+
+      {/* Import */}
+      <ImportModal
+        isOpen={importModal}
+        onClose={() => setImportModal(false)}
+        onImport={handleImport}
+        type="client"
+        primaryColor={pc}
+      />
 
       {/* Confirm Delete */}
       <Modal isOpen={!!confirmDelete} onClose={() => setConfirmDelete(null)} title="Excluir Contacto" size="sm">
