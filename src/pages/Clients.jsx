@@ -4,7 +4,12 @@ import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
 
-const SEGMENTS = ['Varejo', 'Tecnologia', 'Saúde e Bem-estar', 'Construção', 'Alimentação', 'Jurídico', 'Marketing', 'Educação', 'Beleza e Estética', 'Moda', 'Outro']
+const SEGMENTS = [
+  'Estética Facial', 'Estética Corporal', 'Nail Designer',
+  'Cabeleireiro / Hair', 'Maquiagem Artística', 'Lash Designer',
+  'Design de Sobrancelha', 'Dermopigmentação', 'Depilação',
+  'Spa & Bem-estar', 'Noiva', 'Cliente Final', 'Outro',
+]
 
 const emptyForm = {
   name: '', company: '', email: '', phone: '',

@@ -5,7 +5,7 @@ import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
 import Dashboard from './pages/Dashboard'
 import Clients from './pages/Clients'
-import Projects from './pages/Projects'
+import Services from './pages/Services'
 import Financial from './pages/Financial'
 import Calendar from './pages/Calendar'
 import Pipeline from './pages/Pipeline'
@@ -35,7 +35,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/clients" element={<Clients />} />
-            <Route path="/projects" element={<Projects />} />
+            <Route path="/services" element={<Services />} />
             <Route path="/financial" element={<Financial />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/pipeline" element={<Pipeline />} />

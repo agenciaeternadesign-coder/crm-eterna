@@ -1,14 +1,14 @@
 import { NavLink } from 'react-router-dom'
 import {
-  LayoutDashboard, Users, FolderKanban, Wallet,
+  LayoutDashboard, Users, Scissors, Wallet,
   CalendarDays, TrendingUp, Settings, X,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
-  { path: '/clients', icon: Users, label: 'Clientes' },
-  { path: '/projects', icon: FolderKanban, label: 'Projetos' },
+  { path: '/clients', icon: Users, label: 'Clientes & Alunas' },
+  { path: '/services', icon: Scissors, label: 'Serviços' },
   { path: '/financial', icon: Wallet, label: 'Financeiro' },
   { path: '/calendar', icon: CalendarDays, label: 'Agenda' },
   { path: '/pipeline', icon: TrendingUp, label: 'Pipeline' },

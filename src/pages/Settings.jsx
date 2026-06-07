@@ -7,31 +7,32 @@ import {
 import { useApp } from '../context/AppContext'
 
 const PRESET_COLORS = [
-  { label: 'Violeta', value: '#7C3AED' },
+  { label: 'Rosa', value: '#D4547A' },
+  { label: 'Rosa Claro', value: '#E8699A' },
+  { label: 'Dourado', value: '#C9A96E' },
+  { label: 'Coral', value: '#F97066' },
+  { label: 'Roxo', value: '#A855F7' },
   { label: 'Azul', value: '#2563EB' },
-  { label: 'Rosa', value: '#DB2777' },
   { label: 'Esmeralda', value: '#059669' },
-  { label: 'Laranja', value: '#EA580C' },
-  { label: 'Ciano', value: '#0891B2' },
-  { label: 'Âmbar', value: '#D97706' },
-  { label: 'Vermelho', value: '#DC2626' },
+  { label: 'Carvão', value: '#1E293B' },
 ]
 
 const SECONDARY_COLORS = [
-  { label: 'Rosa', value: '#EC4899' },
-  { label: 'Índigo', value: '#6366F1' },
+  { label: 'Dourado', value: '#C9A96E' },
+  { label: 'Rose Gold', value: '#E8B4B8' },
+  { label: 'Champagne', value: '#D4AF84' },
+  { label: 'Lilás', value: '#C4B5FD' },
+  { label: 'Coral', value: '#FDA4AF' },
+  { label: 'Nude', value: '#E8C9A0' },
   { label: 'Ciano', value: '#06B6D4' },
   { label: 'Esmeralda', value: '#10B981' },
-  { label: 'Âmbar', value: '#F59E0B' },
-  { label: 'Coral', value: '#F97316' },
-  { label: 'Lavanda', value: '#A78BFA' },
-  { label: 'Limão', value: '#84CC16' },
 ]
 
 const SEGMENTS = [
-  'Design & Criativo', 'Marketing Digital', 'Tecnologia', 'Saúde e Bem-estar',
-  'Beleza e Estética', 'Moda e Varejo', 'Alimentação', 'Construção e Arquitetura',
-  'Jurídico e Contabilidade', 'Educação', 'Consultoria', 'Eventos', 'Outro',
+  'Estética Facial', 'Estética Corporal', 'Nail Designer',
+  'Cabeleireiro / Hair', 'Maquiagem Artística', 'Lash Designer',
+  'Design de Sobrancelha', 'Dermopigmentação', 'Depilação',
+  'Spa & Bem-estar', 'Cursos e Formações', 'Beleza e Estética', 'Outro',
 ]
 
 const TABS = [

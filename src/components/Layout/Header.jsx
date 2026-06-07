@@ -4,8 +4,8 @@ import { useApp } from '../../context/AppContext'
 
 const pageTitles = {
   '/': 'Dashboard',
-  '/clients': 'Clientes',
-  '/projects': 'Projetos',
+  '/clients': 'Clientes & Alunas',
+  '/services': 'Serviços & Formações',
   '/financial': 'Financeiro',
   '/calendar': 'Agenda',
   '/pipeline': 'Pipeline de Vendas',

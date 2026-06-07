@@ -1,19 +1,19 @@
 export const defaultSettings = {
   // Identidade Visual
   logoUrl: null,
-  primaryColor: '#7C3AED',
-  secondaryColor: '#EC4899',
+  primaryColor: '#D4547A',
+  secondaryColor: '#C9A96E',
   // Dados da Empresa
   companyName: 'Eterna Design',
-  segment: 'Design & Criativo',
+  segment: 'Beleza e Estética',
   cnpj: '',
   address: '',
   phone: '',
   contactEmail: '',
   website: '',
   // Interface
-  systemName: 'CRM Eterna Design',
-  welcomeMessage: 'Olá! Aqui está o resumo do seu negócio.',
+  systemName: 'CRM Eterna Beauty',
+  welcomeMessage: 'Bem-vinda! Aqui está o resumo do seu negócio hoje.',
   darkMode: false,
 }
 
