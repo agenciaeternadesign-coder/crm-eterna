@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { Plus, Search, Pencil, Trash2, Scissors, Clock, User, Upload } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, Scissors, Clock, User, Upload, UsersRound } from 'lucide-react'
 import { useApp } from '../context/AppContext'
+import { useTeam } from '../context/TeamContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
 import ImportModal from '../components/UI/ImportModal'
@@ -10,11 +11,13 @@ const STATUS_LABELS = { em_andamento: 'Em Andamento', a_fazer: 'A Fazer', conclu
 
 const emptyForm = {
   clientId: '', name: '', description: '',
-  status: 'a_fazer', tipo: 'servico', dueDate: '', responsible: '',
+  status: 'a_fazer', tipo: 'servico', dueDate: '', responsible: '', performedBy: '',
 }
 
 export default function Services() {
   const { projects, clients, addProject, updateProject, deleteProject, settings } = useApp()
+  const { members } = useTeam()
+  const activeMembers = members.filter(m => m.status === 'ativa')
   const pc = settings.primaryColor || '#D4547A'
 
   const [search, setSearch] = useState('')
@@ -172,6 +175,15 @@ export default function Services() {
                         )}
 
                         <div className="space-y-1.5 text-xs text-slate-400">
+                          {project.performedBy && (() => {
+                            const performer = members.find(m => m.id === project.performedBy)
+                            return performer ? (
+                              <p className="flex items-center gap-1.5">
+                                <UsersRound size={11} />
+                                <span className="font-medium" style={{ color: pc }}>{performer.name}</span>
+                              </p>
+                            ) : null
+                          })()}
                           {client && (
                             <p className="flex items-center gap-1.5">
                               <User size={11} />
@@ -288,6 +300,21 @@ export default function Services() {
               className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2"
             />
           </div>
+
+          {activeMembers.length > 0 && (
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">
+                <span className="flex items-center gap-1.5"><UsersRound size={12} /> Realizado por (Equipa)</span>
+              </label>
+              <select value={form.performedBy} onChange={set('performedBy')}
+                className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none bg-white">
+                <option value="">— Nenhuma (ou externo) —</option>
+                {activeMembers.map(m => (
+                  <option key={m.id} value={m.id}>{m.name}{m.profession ? ` · ${m.profession}` : ''}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex gap-3 pt-2">
             <button onClick={() => setModal(false)} className="flex-1 py-2.5 text-sm border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600">Cancelar</button>

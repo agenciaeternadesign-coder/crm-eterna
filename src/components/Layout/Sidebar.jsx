@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Scissors, Wallet,
-  CalendarDays, TrendingUp, Settings, X, Crown,
+  CalendarDays, TrendingUp, Settings, X, Crown, UsersRound,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import { useAuth } from '../../context/AuthContext'
@@ -10,6 +10,7 @@ const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { path: '/clients', icon: Users, label: 'Clientes & Alunas' },
   { path: '/services', icon: Scissors, label: 'Serviços' },
+  { path: '/team', icon: UsersRound, label: 'Equipa' },
   { path: '/financial', icon: Wallet, label: 'Financeiro' },
   { path: '/calendar', icon: CalendarDays, label: 'Agenda' },
   { path: '/pipeline', icon: TrendingUp, label: 'Pipeline' },

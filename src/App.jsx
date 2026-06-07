@@ -13,6 +13,8 @@ import Pipeline from './pages/Pipeline'
 import Settings from './pages/Settings'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
+import Team from './pages/Team'
+import { TeamProvider } from './context/TeamContext'
 
 function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -61,6 +63,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <AppProvider>
+          <TeamProvider>
           <Routes>
             {/* Rota pública */}
             <Route path="/login" element={<Login />} />
@@ -75,8 +78,10 @@ export default function App() {
               <Route path="/pipeline" element={<Pipeline />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/team" element={<Team />} />
             </Route>
           </Routes>
+          </TeamProvider>
         </AppProvider>
       </AuthProvider>
     </BrowserRouter>
