@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
 import Dashboard from './pages/Dashboard'
@@ -10,6 +11,8 @@ import Financial from './pages/Financial'
 import Calendar from './pages/Calendar'
 import Pipeline from './pages/Pipeline'
 import Settings from './pages/Settings'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
 
 function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -27,22 +30,44 @@ function Layout() {
   )
 }
 
+function ProtectedRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center"
+      style={{ background: 'linear-gradient(135deg, #fdf2f5 0%, #fef9f0 100%)' }}>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 rounded-full border-4 border-pink-200 border-t-pink-500 animate-spin" />
+        <p className="text-sm text-slate-400">A carregar...</p>
+      </div>
+    </div>
+  )
+  if (!user) return <Navigate to="/login" replace />
+  return children
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <AppProvider>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/clients" element={<Clients />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/financial" element={<Financial />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/pipeline" element={<Pipeline />} />
-            <Route path="/settings" element={<Settings />} />
-          </Route>
-        </Routes>
-      </AppProvider>
+      <AuthProvider>
+        <AppProvider>
+          <Routes>
+            {/* Rota pública */}
+            <Route path="/login" element={<Login />} />
+
+            {/* Rotas protegidas */}
+            <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/clients" element={<Clients />} />
+              <Route path="/services" element={<Services />} />
+              <Route path="/financial" element={<Financial />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/pipeline" element={<Pipeline />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/admin" element={<Admin />} />
+            </Route>
+          </Routes>
+        </AppProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

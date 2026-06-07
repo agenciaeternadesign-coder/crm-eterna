@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, Scissors, Wallet,
-  CalendarDays, TrendingUp, Settings, X,
+  CalendarDays, TrendingUp, Settings, X, Crown,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
+import { useAuth } from '../../context/AuthContext'
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -16,8 +17,9 @@ const navItems = [
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const { settings } = useApp()
-  const pc = settings.primaryColor || '#7C3AED'
-  const sc = settings.secondaryColor || '#EC4899'
+  const { isAdmin } = useAuth()
+  const pc = settings.primaryColor || '#D4547A'
+  const sc = settings.secondaryColor || '#C9A96E'
 
   const linkClass = (isActive) =>
     `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-150 ${
@@ -30,10 +32,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
   return (
     <>
       {mobileOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
-          onClick={onClose}
-        />
+        <div className="fixed inset-0 bg-black/40 z-40 lg:hidden" onClick={onClose} />
       )}
 
       <aside
@@ -45,22 +44,18 @@ export default function Sidebar({ mobileOpen, onClose }) {
         <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100 flex-shrink-0">
           <div className="flex items-center gap-3 min-w-0">
             {settings.logoUrl ? (
-              <img
-                src={settings.logoUrl}
-                alt="Logo"
-                className="h-9 w-auto max-w-[140px] object-contain"
-              />
+              <img src={settings.logoUrl} alt="Logo" className="h-9 w-auto max-w-[140px] object-contain" />
             ) : (
               <>
                 <div
                   className="w-8 h-8 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-                  style={{ backgroundColor: pc }}
+                  style={{ background: `linear-gradient(135deg, ${pc}, ${sc})` }}
                 >
                   {(settings.companyName || 'E').charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
                   <p className="font-semibold text-slate-800 text-sm truncate leading-tight">
-                    {settings.companyName || 'Meu Negócio'}
+                    {settings.companyName || 'Eterna Design'}
                   </p>
                   {settings.segment && (
                     <p className="text-[10px] text-slate-400 truncate">{settings.segment}</p>
@@ -69,10 +64,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
               </>
             )}
           </div>
-          <button
-            onClick={onClose}
-            className="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg"
-          >
+          <button onClick={onClose} className="lg:hidden p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg">
             <X size={18} />
           </button>
         </div>
@@ -92,9 +84,27 @@ export default function Sidebar({ mobileOpen, onClose }) {
               <span>{label}</span>
             </NavLink>
           ))}
+
+          {/* Admin — só visível para agenciaeternadesign@gmail.com */}
+          {isAdmin && (
+            <>
+              <div className="pt-3 pb-1 px-3">
+                <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Admin</p>
+              </div>
+              <NavLink
+                to="/admin"
+                onClick={onClose}
+                className={({ isActive }) => linkClass(isActive)}
+                style={({ isActive }) => isActive ? { backgroundColor: `${sc}20`, color: sc } : {}}
+              >
+                <Crown size={19} className="flex-shrink-0" />
+                <span>Painel Admin</span>
+              </NavLink>
+            </>
+          )}
         </nav>
 
-        {/* Settings / Brand at bottom */}
+        {/* Bottom: Settings */}
         <div className="p-3 border-t border-slate-100 flex-shrink-0">
           <NavLink
             to="/settings"
