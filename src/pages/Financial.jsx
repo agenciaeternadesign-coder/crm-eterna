@@ -7,10 +7,18 @@ import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
 
-const CATEGORIES_IN = ['Serviços de Design', 'Marketing Digital', 'Consultoria', 'Desenvolvimento Web', 'Outro']
-const CATEGORIES_OUT = ['Software e Assinaturas', 'Infraestrutura', 'Marketing', 'Material', 'Serviços Terceiros', 'Educação e Cursos', 'Impostos', 'Outro']
+const CATEGORIES_IN = [
+  'Serviços de Estética', 'Formações e Cursos', 'Tratamentos Corporais',
+  'Tratamentos Faciais', 'Design de Sobrancelha', 'Lash Design',
+  'Nail Design', 'Depilação', 'Maquiagem', 'Consultoria', 'Outro',
+]
+const CATEGORIES_OUT = [
+  'Produtos e Materiais', 'Equipamentos', 'Aluguel / Espaço',
+  'Software e Assinaturas', 'Marketing', 'Educação e Cursos',
+  'Impostos', 'Serviços Terceiros', 'Outro',
+]
 
-const fmt = (v) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
+const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 const fmtDate = (d) => d ? d.split('-').reverse().join('/') : '-'
 const fmtShort = (v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v
 

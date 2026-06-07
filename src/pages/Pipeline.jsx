@@ -4,7 +4,7 @@ import { Plus, Pencil, Trash2, TrendingUp, Users, GraduationCap } from 'lucide-r
 import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 
-const fmt = (v) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
+const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 
 const STAGES_CLIENTE = [
   { id: 'c_lead', label: 'Lead', color: '#64748b' },
@@ -245,7 +245,7 @@ export default function Pipeline() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1.5">Valor (€) *</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1.5">Valor (R$) *</label>
               <input type="number" min="0" step="10" value={form.value} onChange={set('value')} placeholder="0" className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
             </div>
             <div>

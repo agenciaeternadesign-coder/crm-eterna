@@ -7,10 +7,10 @@ import {
 import { useApp } from '../context/AppContext'
 import Badge from '../components/UI/Badge'
 
-const fmt = (v) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
+const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v)
 const fmtShort = (v) => {
-  if (v >= 1000) return `${(v / 1000).toFixed(1).replace('.', ',')}k €`
-  return `${v} €`
+  if (v >= 1000) return `R$ ${(v / 1000).toFixed(1).replace('.', ',')}k`
+  return `R$ ${v}`
 }
 
 function StatCard({ icon: Icon, label, value, sub, color, to }) {
@@ -115,7 +115,7 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard icon={Users} label="Clientes Ativos" value={activeClients} sub={`${clients.length} no total`} color="#3b82f6" to="/clients" />
-        <StatCard icon={FolderKanban} label="Projetos Ativos" value={activeProjects} sub={`${projects.length} no total`} color={pc} to="/projects" />
+        <StatCard icon={FolderKanban} label="Serviços Ativos" value={activeProjects} sub={`${projects.length} no total`} color={pc} to="/services" />
         <StatCard icon={Wallet} label="Receita do Mês" value={fmt(monthIncome)} sub="pagamentos recebidos" color="#10b981" to="/financial" />
         <StatCard icon={TrendingUp} label="Pipeline Aberto" value={fmt(pipelineValue)} sub="em negociação" color="#f59e0b" to="/pipeline" />
       </div>
@@ -181,12 +181,12 @@ export default function Dashboard() {
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-slate-800">Projetos Recentes</h3>
-          <Link to="/projects" className="text-xs font-medium" style={{ color: pc }}>Ver todos</Link>
+          <Link to="/services" className="text-xs font-medium" style={{ color: pc }}>Ver todos</Link>
         </div>
         {recentProjects.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-24 text-slate-400">
             <FolderKanban size={28} strokeWidth={1.5} />
-            <p className="text-xs mt-2">Nenhum projeto ainda</p>
+            <p className="text-xs mt-2">Nenhum serviço ainda</p>
           </div>
         ) : (
           <div className="divide-y divide-slate-50">
