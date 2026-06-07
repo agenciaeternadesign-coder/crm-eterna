@@ -14,7 +14,9 @@ import Settings from './pages/Settings'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
 import Team from './pages/Team'
+import Formations from './pages/Formations'
 import { TeamProvider } from './context/TeamContext'
+import { FormationsProvider } from './context/FormationsContext'
 
 function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -64,6 +66,7 @@ export default function App() {
       <AuthProvider>
         <AppProvider>
           <TeamProvider>
+          <FormationsProvider>
           <Routes>
             {/* Rota pública */}
             <Route path="/login" element={<Login />} />
@@ -79,8 +82,10 @@ export default function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/team" element={<Team />} />
+              <Route path="/formations" element={<Formations />} />
             </Route>
           </Routes>
+          </FormationsProvider>
           </TeamProvider>
         </AppProvider>
       </AuthProvider>

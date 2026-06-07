@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react'
-import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Wallet, TrendingUp } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Wallet, TrendingUp, GraduationCap, UsersRound, Scissors } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
 import { useApp } from '../context/AppContext'
+import { useFormations } from '../context/FormationsContext'
+import { useTeam } from '../context/TeamContext'
 import Modal from '../components/UI/Modal'
 import Badge from '../components/UI/Badge'
 
@@ -30,6 +32,8 @@ const emptyForm = {
 
 export default function Financial() {
   const { financial, clients, addEntry, updateEntry, deleteEntry, settings } = useApp()
+  const { formationsRevenue, students: formStudents } = useFormations()
+  const { production, members } = useTeam()
   const pc = settings.primaryColor || '#7C3AED'
 
   const [search, setSearch] = useState('')
@@ -127,6 +131,63 @@ export default function Financial() {
           </p>
         </div>
       </div>
+
+      {/* Receitas por Origem */}
+      {(() => {
+        const teamTotal = production.reduce((sum, r) => sum + (Number(r.value) || 0), 0)
+        const grandTotal = totalIn + formationsRevenue + teamTotal
+        const paidCount = formStudents.filter(s => s.paid).length
+        const sources = [
+          {
+            icon: Scissors, label: 'Serviços próprios',
+            value: totalIn, textColor: 'text-emerald-600', bgIcon: 'bg-emerald-50', barColor: '#10b981',
+            desc: 'Lançamentos do financeiro',
+          },
+          {
+            icon: UsersRound, label: 'Equipa',
+            value: teamTotal, textColor: 'text-blue-600', bgIcon: 'bg-blue-50', barColor: '#3b82f6',
+            desc: `${production.length} registo${production.length !== 1 ? 's' : ''} de produção`,
+          },
+          {
+            icon: GraduationCap, label: 'Formações',
+            value: formationsRevenue, textColor: 'text-purple-600', bgIcon: 'bg-purple-50', barColor: '#a855f7',
+            desc: `${paidCount} aluna${paidCount !== 1 ? 's' : ''} ${paidCount !== 1 ? 'pagaram' : 'pagou'}`,
+          },
+        ]
+        return (
+          <div className="bg-white rounded-2xl border border-slate-100 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-slate-800">Receitas por Origem</h3>
+              <span className="text-xs text-slate-400 bg-slate-50 px-3 py-1 rounded-full">
+                Total geral: <strong className="text-slate-700">{fmt(grandTotal)}</strong>
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {sources.map(({ icon: Icon, label, value, textColor, bgIcon, barColor, desc }) => {
+                const pct = grandTotal > 0 ? Math.round((value / grandTotal) * 100) : 0
+                return (
+                  <div key={label} className="border border-slate-100 rounded-xl p-4">
+                    <div className="flex items-center gap-2.5 mb-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${bgIcon}`}>
+                        <Icon size={15} className={textColor} />
+                      </div>
+                      <p className="text-xs font-medium text-slate-600">{label}</p>
+                    </div>
+                    <p className={`text-xl font-bold mb-1 ${textColor}`}>{fmt(value)}</p>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-[11px] text-slate-400">{desc}</p>
+                      <p className="text-[11px] font-semibold text-slate-500">{pct}%</p>
+                    </div>
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: barColor }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Chart */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5">
