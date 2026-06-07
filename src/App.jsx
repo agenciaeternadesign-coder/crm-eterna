@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom'
-import { AppProvider } from './context/AppContext'
+import { AppProvider, useApp } from './context/AppContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Sidebar from './components/Layout/Sidebar'
 import Header from './components/Layout/Header'
@@ -16,6 +16,17 @@ import Admin from './pages/Admin'
 
 function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const { loading } = useApp()
+
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center"
+      style={{ background: 'linear-gradient(135deg, #fdf2f5 0%, #fef9f0 100%)' }}>
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 rounded-full border-4 border-pink-200 border-t-pink-500 animate-spin" />
+        <p className="text-sm text-slate-400">A carregar os teus dados...</p>
+      </div>
+    </div>
+  )
 
   return (
     <div className="flex h-screen bg-slate-50 overflow-hidden">
