@@ -2,7 +2,8 @@ import { useState, useRef } from 'react'
 import {
   Check, Upload, RotateCcw, Palette, Building2, Image as ImageIcon,
   Monitor, Sun, Moon, Sparkles, Globe, Phone, Mail, MapPin,
-  Hash, Briefcase, Type, MessageSquare, Eye, Save,
+  Hash, Briefcase, Type, MessageSquare, Eye, Save, Download,
+  DatabaseBackup, ShieldCheck, FileJson,
 } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 
@@ -39,6 +40,7 @@ const TABS = [
   { id: 'marca', label: 'Identidade Visual', icon: Palette },
   { id: 'empresa', label: 'Dados da Empresa', icon: Building2 },
   { id: 'interface', label: 'Interface do Sistema', icon: Monitor },
+  { id: 'backup', label: 'Backup & Dados', icon: ShieldCheck },
 ]
 
 function ColorPicker({ label, value, onChange, presets }) {
@@ -102,13 +104,16 @@ function Field({ icon: Icon, label, children }) {
 
 const inputClass = 'w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 transition-all'
 
+const lsRead = (key) => { try { return JSON.parse(localStorage.getItem(key) || '[]') } catch { return [] } }
+
 export default function Settings() {
-  const { settings, updateSettings, resetData } = useApp()
+  const { settings, updateSettings, resetData, clients, projects, financial, pipeline } = useApp()
   const [form, setForm] = useState({ ...settings })
   const [activeTab, setActiveTab] = useState('marca')
   const [saved, setSaved] = useState(false)
   const [confirmReset, setConfirmReset] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [backupDone, setBackupDone] = useState(false)
   const logoRef = useRef(null)
 
   const pc = form.primaryColor || '#7C3AED'
@@ -134,6 +139,34 @@ export default function Settings() {
   const handleReset = () => {
     resetData()
     setConfirmReset(false)
+  }
+
+  const handleBackup = () => {
+    const today = new Date().toISOString().split('T')[0]
+    const backup = {
+      exportadoEm: new Date().toISOString(),
+      versao: '1.0',
+      clientes:          clients,
+      servicos:          projects,
+      financeiro:        financial,
+      pipeline:          pipeline,
+      agenda:            lsRead('crm_agenda_v2'),
+      equipa:            lsRead('crm_equipa'),
+      equipaProducao:    lsRead('crm_equipa_producao'),
+      equipaPagamentos:  lsRead('crm_equipa_pagamentos'),
+      formacoes:         lsRead('crm_formacoes'),
+      alunas:            lsRead('crm_formacoes_alunas'),
+      definicoes:        settings,
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' })
+    const url  = URL.createObjectURL(blob)
+    const a    = document.createElement('a')
+    a.href     = url
+    a.download = `crm-backup-${today}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+    setBackupDone(true)
+    setTimeout(() => setBackupDone(false), 3000)
   }
 
   return (
@@ -474,6 +507,74 @@ export default function Settings() {
             <p className="text-xs text-slate-400 mt-3 text-center">
               ⚡ A mudança de tema é aplicada imediatamente, sem precisar salvar.
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* ---- TAB: BACKUP & DADOS ---- */}
+      {activeTab === 'backup' && (
+        <div className="space-y-5">
+          {/* Backup manual */}
+          <div className="bg-white rounded-2xl border border-slate-100 p-6">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-emerald-50">
+                <Download size={18} className="text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-slate-800">Backup Manual</h3>
+                <p className="text-xs text-slate-500">Exporta todos os dados do CRM num ficheiro JSON</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 rounded-2xl p-5 mb-5">
+              <p className="text-xs font-semibold text-slate-600 mb-3">O backup inclui:</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  ['👥', 'Clientes & Histórico'],
+                  ['✂️', 'Serviços'],
+                  ['💰', 'Financeiro'],
+                  ['📊', 'Pipeline'],
+                  ['📅', 'Agenda / Marcações'],
+                  ['👩‍💼', 'Equipa & Produção'],
+                  ['🎓', 'Formações & Alunas'],
+                  ['⚙️', 'Definições da marca'],
+                ].map(([icon, label]) => (
+                  <div key={label} className="flex items-center gap-2 text-xs text-slate-500">
+                    <span>{icon}</span>{label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <button
+              onClick={handleBackup}
+              className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-95"
+              style={{ backgroundColor: backupDone ? '#10b981' : '#059669' }}
+            >
+              {backupDone
+                ? <><Check size={16} strokeWidth={3}/> Backup guardado!</>
+                : <><FileJson size={16}/> Descarregar Backup (JSON)</>
+              }
+            </button>
+            <p className="text-[11px] text-slate-400 text-center mt-2">
+              Ficheiro: <code>crm-backup-{new Date().toISOString().split('T')[0]}.json</code>
+            </p>
+          </div>
+
+          {/* Info */}
+          <div className="bg-blue-50 border border-blue-100 rounded-2xl p-5">
+            <div className="flex gap-3">
+              <ShieldCheck size={18} className="text-blue-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-blue-700 mb-1">Como usar o backup?</p>
+                <ul className="text-xs text-blue-600 space-y-1">
+                  <li>• Guarda o ficheiro <strong>.json</strong> num lugar seguro (Google Drive, email, etc.)</li>
+                  <li>• Em caso de perda de dados, o ficheiro pode ser usado para restaurar</li>
+                  <li>• Recomendamos fazer backup <strong>semanalmente</strong></li>
+                  <li>• Os dados da nuvem (Clientes, Serviços, Financeiro) também ficam guardados no Supabase</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       )}

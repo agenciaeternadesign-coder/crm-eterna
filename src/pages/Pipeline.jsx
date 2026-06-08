@@ -27,7 +27,16 @@ const STAGES_ALUNA = [
 const WON = { cliente: 'c_fidelizada', aluna: 'a_concluida' }
 const LOST = { cliente: 'c_perdida', aluna: 'a_desistiu' }
 
-const emptyForm = { title: '', clientName: '', value: '', stage: 'c_lead', tipo: 'cliente', notes: '' }
+const ORIGENS = [
+  { id: 'instagram',   label: 'Instagram',   emoji: '📸', color: '#e1306c', bg: '#fce4ec' },
+  { id: 'facebook',    label: 'Facebook',    emoji: '👥', color: '#1877f2', bg: '#e3f2fd' },
+  { id: 'prospeccao',  label: 'Prospecção',  emoji: '🔍', color: '#f59e0b', bg: '#fffbeb' },
+  { id: 'indicacao',   label: 'Indicação',   emoji: '🤝', color: '#10b981', bg: '#ecfdf5' },
+  { id: 'tiktok',      label: 'TikTok',      emoji: '🎵', color: '#000000', bg: '#f1f5f9' },
+  { id: 'outro',       label: 'Outro',       emoji: '💬', color: '#64748b', bg: '#f8fafc' },
+]
+
+const emptyForm = { title: '', clientName: '', value: '', stage: 'c_lead', tipo: 'cliente', origem: '', notes: '' }
 
 export default function Pipeline() {
   const { pipeline, addPipelineCard, updatePipelineCard, deletePipelineCard, settings } = useApp()
@@ -193,7 +202,17 @@ export default function Pipeline() {
                                 </div>
                               </div>
 
-                              <p className="text-xs text-slate-500 mb-3">{card.clientName}</p>
+                              <p className="text-xs text-slate-500 mb-2">{card.clientName}</p>
+
+                              {card.origem && (() => {
+                                const o = ORIGENS.find(x => x.id === card.origem)
+                                return o ? (
+                                  <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full mb-2"
+                                    style={{ backgroundColor: o.bg, color: o.color }}>
+                                    {o.emoji} {o.label}
+                                  </span>
+                                ) : null
+                              })()}
 
                               <div className="flex items-center justify-between">
                                 <span
@@ -255,6 +274,27 @@ export default function Pipeline() {
               </select>
             </div>
           </div>
+          {/* Origem */}
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-2">De onde veio?</label>
+            <div className="grid grid-cols-3 gap-1.5">
+              {ORIGENS.map(o => (
+                <button
+                  key={o.id}
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, origem: f.origem === o.id ? '' : o.id }))}
+                  className="flex items-center gap-1.5 px-2.5 py-2 rounded-xl border text-xs font-medium transition-all"
+                  style={form.origem === o.id
+                    ? { backgroundColor: o.color, color: '#fff', borderColor: o.color }
+                    : { borderColor: '#e2e8f0', color: '#64748b', backgroundColor: '#fff' }}
+                >
+                  <span>{o.emoji}</span>
+                  {o.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">Notas</label>
             <textarea value={form.notes} onChange={set('notes')} rows={3} placeholder="Observações, próximos passos..." className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none resize-none" />
