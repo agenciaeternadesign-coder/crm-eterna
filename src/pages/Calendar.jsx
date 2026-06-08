@@ -51,22 +51,16 @@ const hasPhone    = (p)    => cleanPhone(p).length >= 8
 const waUrl       = (phone, text) => `https://wa.me/${cleanPhone(phone)}?text=${encodeURIComponent(text)}`
 
 const msgConfirm = (name, service, date, time) =>
-`Olá ${name}! ✨
+`Ola ${name},
 
-Confirmo a tua marcação:
-📅 ${fmtDateShort(date)}
-🕐 ${time || '—'}${service ? `\n💆 ${service}` : ''}
+A sua marcacao esta confirmada para ${fmtDateShort(date)}${time ? ` as ${time}` : ''}.${service ? `\nServico: ${service}.` : ''}
 
-Qualquer dúvida estou aqui. Até já! 🌸`
+Para mais detalhes ou alteracoes, entre em contacto.`
 
 const msgReminder = (name, service, date, time) =>
-`Olá ${name}! 💫
+`Lembrete: tem uma marcacao amanha em ${fmtDateShort(date)}${time ? ` as ${time}` : ''}.${service ? `\nServico: ${service}.` : ''}
 
-Lembro-te da tua marcação de amanhã:
-📅 ${fmtDateShort(date)}
-🕐 ${time || '—'}${service ? `\n💆 ${service}` : ''}
-
-Até amanhã! 💅`
+Para mais detalhes ou alteracoes, entre em contacto.`
 
 // ── Grelha do calendário ────────────────────────────────────
 function getDays(year, month) {
