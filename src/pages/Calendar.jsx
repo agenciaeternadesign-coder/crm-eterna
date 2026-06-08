@@ -53,14 +53,22 @@ const waUrl       = (phone, text) => `https://wa.me/${cleanPhone(phone)}?text=${
 const msgConfirm = (name, service, date, time) =>
 `Ola ${name},
 
-A sua marcacao esta confirmada para ${fmtDateShort(date)}${time ? ` as ${time}` : ''}.${service ? `\nServico: ${service}.` : ''}
+A sua marcacao foi confirmada.
 
-Para mais detalhes ou alteracoes, entre em contacto.`
+Servico: ${service || 'A definir'}
+Data: ${fmtDateLong(date)}${time ? `\nHora: ${time}` : ''}
+
+Se precisar de alterar ou cancelar, entre em contacto com antecedencia. Ate breve.`
 
 const msgReminder = (name, service, date, time) =>
-`Lembrete: tem uma marcacao amanha em ${fmtDateShort(date)}${time ? ` as ${time}` : ''}.${service ? `\nServico: ${service}.` : ''}
+`Ola ${name},
 
-Para mais detalhes ou alteracoes, entre em contacto.`
+Lembramos que tem uma marcacao amanha.
+
+Servico: ${service || 'A definir'}
+Data: ${fmtDateLong(date)}${time ? `\nHora: ${time}` : ''}
+
+Caso nao possa comparecer, agradecemos que nos avise com antecedencia. Ate amanha.`
 
 // ── Grelha do calendário ────────────────────────────────────
 function getDays(year, month) {
