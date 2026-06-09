@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import { AppProvider, useApp } from './context/AppContext'
 import { AuthProvider, useAuth } from './context/AuthContext'
@@ -45,19 +45,23 @@ function Layout() {
   )
 }
 
-// ── Demo expirado ────────────────────────────────────────────
-function DemoExpiredScreen() {
+// ── Tela de acesso expirado (demo ou trial) ──────────────────
+function ExpiredScreen({ plano }) {
+  const isDemo = plano === 'demo'
   return (
     <div className="min-h-screen flex items-center justify-center p-6"
       style={{ background: 'linear-gradient(135deg, #fdf2f5 0%, #fef9f0 100%)' }}>
       <div className="max-w-md w-full text-center">
-        <div className="text-5xl mb-6">⏰</div>
+        <div className="text-5xl mb-6">{isDemo ? '⏰' : '📅'}</div>
         <h1 className="text-2xl font-light mb-3" style={{ color: '#6B1A2A' }}>
-          O teu período de demonstração terminou
+          {isDemo
+            ? 'O teu período de demonstração terminou'
+            : 'O teu período de trial terminou'}
         </h1>
         <p className="text-slate-500 mb-8 leading-relaxed">
-          Esperamos que tenhas gostado do Eterna Beauty CRM.
-          Para continuar a gerir o teu negócio, escolhe o plano que melhor se adapta a ti.
+          {isDemo
+            ? 'Esperamos que tenhas gostado do Eterna Beauty CRM. Para continuar a gerir o teu negócio, escolhe o plano que melhor se adapta a ti.'
+            : 'Os teus 30 dias de trial chegaram ao fim. Para continuares com todos os teus dados guardados, escolhe o plano Essencial ou Professional.'}
         </p>
         <a
           href="https://crm-landing-jade.vercel.app/#planos"
@@ -73,30 +77,37 @@ function DemoExpiredScreen() {
   )
 }
 
-// ── Banner contagem demo ─────────────────────────────────────
-function DemoBanner({ expiresAt }) {
+// ── Banner de contagem (demo = horas, trial = dias) ──────────
+function ExpiryBanner({ expiresAt, plano }) {
   const [remaining, setRemaining] = useState('')
+  const isDemo = plano === 'demo'
 
   useEffect(() => {
     const calc = () => {
       const diff = new Date(expiresAt) - new Date()
-      if (diff <= 0) { setRemaining('0h 0m'); return }
-      const h = Math.floor(diff / 3600000)
-      const m = Math.floor((diff % 3600000) / 60000)
-      setRemaining(`${h}h ${m}m`)
+      if (diff <= 0) { setRemaining(isDemo ? '0h 0m' : '0 dias'); return }
+      if (isDemo) {
+        const h = Math.floor(diff / 3600000)
+        const m = Math.floor((diff % 3600000) / 60000)
+        setRemaining(`${h}h ${m}m`)
+      } else {
+        const d = Math.floor(diff / 86400000)
+        const h = Math.floor((diff % 86400000) / 3600000)
+        setRemaining(d > 0 ? `${d} dia${d !== 1 ? 's' : ''}` : `${h}h`)
+      }
     }
     calc()
-    const id = setInterval(calc, 60000)
+    const id = setInterval(calc, isDemo ? 60000 : 3600000)
     return () => clearInterval(id)
-  }, [expiresAt])
+  }, [expiresAt, isDemo])
 
   const diff = new Date(expiresAt) - new Date()
-  const urgent = diff < 2 * 3600000
+  const urgent = isDemo ? diff < 2 * 3600000 : diff < 3 * 86400000
 
   return (
     <div className="flex items-center justify-center gap-3 px-4 py-2 text-sm font-medium"
       style={{ background: urgent ? '#fef3c7' : '#f0fdf4', color: urgent ? '#92400e' : '#166534', borderBottom: `1px solid ${urgent ? '#fde68a' : '#bbf7d0'}` }}>
-      <span>{urgent ? '⚠️' : '🎯'} Modo demonstração</span>
+      <span>{urgent ? '⚠️' : (isDemo ? '🎯' : '📅')} {isDemo ? 'Modo demonstração' : 'Trial 30 dias'}</span>
       <span style={{ opacity: .6 }}>·</span>
       <span>Expira em <strong>{remaining}</strong></span>
       <span style={{ opacity: .6 }}>·</span>
@@ -121,16 +132,16 @@ function ProtectedRoute({ children }) {
   )
   if (!user) return <Navigate to="/login" replace />
 
-  // Verificar demo expirado
+  // Verificar expiração (demo 24h ou trial 30 dias)
   const meta = user.user_metadata || {}
-  if (meta.plano === 'demo' && meta.expires_at) {
+  const hasExpiry = (meta.plano === 'demo' || meta.plano === 'trial') && meta.expires_at
+  if (hasExpiry) {
     if (new Date() > new Date(meta.expires_at)) {
-      return <DemoExpiredScreen />
+      return <ExpiredScreen plano={meta.plano} />
     }
-    // Demo ainda ativo — envolver com banner
     return (
       <div className="flex flex-col h-screen">
-        <DemoBanner expiresAt={meta.expires_at} />
+        <ExpiryBanner expiresAt={meta.expires_at} plano={meta.plano} />
         <div className="flex-1 overflow-hidden">{children}</div>
       </div>
     )
