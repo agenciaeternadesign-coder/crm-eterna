@@ -13,6 +13,7 @@ export function AppProvider({ children }) {
   const [financial, setFinancial] = useLocalStorage('crm_financial', [])
   const [events, setEvents] = useLocalStorage('crm_events', [])
   const [pipeline, setPipeline] = useLocalStorage('crm_pipeline', [])
+  const [contracts, setContracts] = useLocalStorage('crm_contracts', [])
   const [settings, setSettings] = useLocalStorage('crm_settings', defaultSettings)
 
   // Clients
@@ -34,6 +35,11 @@ export function AppProvider({ children }) {
   const addEvent = (data) => setEvents(p => [...p, { ...data, id: generateId() }])
   const updateEvent = (id, data) => setEvents(p => p.map(c => c.id === id ? { ...c, ...data } : c))
   const deleteEvent = (id) => setEvents(p => p.filter(c => c.id !== id))
+
+  // Contracts
+  const addContract = (data) => setContracts(p => [...p, { ...data, id: generateId(), createdAt: today() }])
+  const updateContract = (id, data) => setContracts(p => p.map(c => c.id === id ? { ...c, ...data } : c))
+  const deleteContract = (id) => setContracts(p => p.filter(c => c.id !== id))
 
   // Pipeline
   const addPipelineCard = (data) => setPipeline(p => [...p, { ...data, id: generateId(), createdAt: today() }])
@@ -68,12 +74,13 @@ export function AppProvider({ children }) {
 
   return (
     <AppContext.Provider value={{
-      clients, projects, financial, events, pipeline, settings,
+      clients, projects, financial, events, pipeline, contracts, settings,
       addClient, updateClient, deleteClient,
       addProject, updateProject, deleteProject,
       addEntry, updateEntry, deleteEntry,
       addEvent, updateEvent, deleteEvent,
       addPipelineCard, updatePipelineCard, deletePipelineCard,
+      addContract, updateContract, deleteContract,
       updateSettings, resetData,
       getClientById,
     }}>

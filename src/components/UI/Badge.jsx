@@ -19,6 +19,12 @@ const styles = {
   proposta: 'bg-violet-50 text-violet-700 ring-1 ring-violet-200',
   fechado: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
   perdido: 'bg-red-50 text-red-600 ring-1 ring-red-200',
+  // contract statuses
+  rascunho: 'bg-slate-100 text-slate-600 ring-1 ring-slate-200',
+  enviado: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+  assinado: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
+  cancelado: 'bg-red-50 text-red-600 ring-1 ring-red-200',
+  vencido: 'bg-orange-50 text-orange-700 ring-1 ring-orange-200',
 }
 
 const labels = {
@@ -28,6 +34,8 @@ const labels = {
   entrada: 'Entrada', saida: 'Saída',
   cliente: 'Cliente', aluna: 'Aluna',
   servico: 'Serviço', formacao: 'Formação',
+  rascunho: 'Rascunho', enviado: 'Enviado', assinado: 'Assinado',
+  cancelado: 'Cancelado', vencido: 'Vencido',
 }
 
 export default function Badge({ type, label, className = '' }) {

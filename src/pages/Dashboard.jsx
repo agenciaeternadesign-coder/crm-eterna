@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { Users, FolderKanban, TrendingUp, Wallet, ArrowUpRight, CalendarDays, CheckCircle2, Clock } from 'lucide-react'
+import { Users, FolderKanban, TrendingUp, Wallet, ArrowUpRight, CalendarDays, CheckCircle2, Clock, FileText, AlertCircle, Send } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
@@ -8,6 +8,12 @@ import { useApp } from '../context/AppContext'
 import Badge from '../components/UI/Badge'
 
 const fmt = (v) => new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(v)
+const todayStr = new Date().toISOString().split('T')[0]
+const addDays = (dateStr, days) => {
+  const d = new Date(dateStr + 'T12:00:00')
+  d.setDate(d.getDate() + days)
+  return d.toISOString().split('T')[0]
+}
 const fmtShort = (v) => {
   if (v >= 1000) return `${(v / 1000).toFixed(1).replace('.', ',')}k €`
   return `${v} €`
@@ -32,7 +38,7 @@ function StatCard({ icon: Icon, label, value, sub, color, to }) {
 }
 
 export default function Dashboard() {
-  const { clients, projects, financial, events, pipeline, settings } = useApp()
+  const { clients, projects, financial, events, pipeline, contracts, settings } = useApp()
   const pc = settings.primaryColor || '#7C3AED'
 
   const now = new Date()
@@ -63,6 +69,21 @@ export default function Dashboard() {
     }
     return data
   }, [financial])
+
+  const contractAlerts = useMemo(() => {
+    const awaiting = (contracts || []).filter(c => c.status === 'enviado')
+    const today = todayStr
+    const overdue = []
+    const upcoming = []
+    ;(contracts || []).forEach(c => {
+      ;(c.paymentSchedule || []).forEach(p => {
+        if (p.paid) return
+        if (p.date && p.date < today) overdue.push({ ...p, clientName: c.clientName, contractId: c.id })
+        else if (p.date && p.date <= addDays(today, 7)) upcoming.push({ ...p, clientName: c.clientName, contractId: c.id })
+      })
+    })
+    return { awaiting, overdue, upcoming }
+  }, [contracts])
 
   const recentProjects = [...projects]
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
@@ -176,6 +197,51 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Contract Alerts */}
+      {(contractAlerts.awaiting.length > 0 || contractAlerts.overdue.length > 0 || contractAlerts.upcoming.length > 0) && (
+        <div className="bg-white rounded-2xl border border-slate-100 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-slate-800 flex items-center gap-2">
+              <FileText size={17} className="text-slate-400" />
+              Alertas de Contratos
+            </h3>
+            <Link to="/contracts" className="text-xs font-medium" style={{ color: pc }}>Ver contratos</Link>
+          </div>
+          <div className="space-y-2">
+            {contractAlerts.overdue.map(p => (
+              <div key={p.id} className="flex items-center gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
+                <AlertCircle size={15} className="text-red-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-700 truncate">{p.clientName} — {p.description}</p>
+                  <p className="text-xs text-red-500">Vencimento: {p.date?.split('-').reverse().join('/')}</p>
+                </div>
+                <span className="text-sm font-semibold text-slate-700 flex-shrink-0">{fmt(p.amount)}</span>
+              </div>
+            ))}
+            {contractAlerts.awaiting.map(c => (
+              <div key={c.id} className="flex items-center gap-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                <Send size={15} className="text-blue-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-700 truncate">{c.clientName}</p>
+                  <p className="text-xs text-blue-500">Aguardando assinatura{c.sentAt ? ` · Enviado em ${c.sentAt.split('-').reverse().join('/')}` : ''}</p>
+                </div>
+                <span className="text-sm font-semibold text-slate-700 flex-shrink-0">{fmt(c.totalValue)}</span>
+              </div>
+            ))}
+            {contractAlerts.upcoming.map(p => (
+              <div key={p.id} className="flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-100">
+                <Clock size={15} className="text-amber-500 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-slate-700 truncate">{p.clientName} — {p.description}</p>
+                  <p className="text-xs text-amber-600">Vence em {p.date?.split('-').reverse().join('/')}</p>
+                </div>
+                <span className="text-sm font-semibold text-slate-700 flex-shrink-0">{fmt(p.amount)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recent Projects */}
       <div className="bg-white rounded-2xl border border-slate-100 p-5">

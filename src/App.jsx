@@ -10,6 +10,7 @@ import Financial from './pages/Financial'
 import Calendar from './pages/Calendar'
 import Pipeline from './pages/Pipeline'
 import Settings from './pages/Settings'
+import Contracts from './pages/Contracts'
 
 function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/financial" element={<Financial />} />
             <Route path="/calendar" element={<Calendar />} />
             <Route path="/pipeline" element={<Pipeline />} />
+            <Route path="/contracts" element={<Contracts />} />
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>

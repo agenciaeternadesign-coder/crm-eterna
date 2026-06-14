@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, FolderKanban, Wallet,
-  CalendarDays, TrendingUp, Settings, X,
+  CalendarDays, TrendingUp, Settings, X, FileText,
 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 
@@ -12,6 +12,7 @@ const navItems = [
   { path: '/financial', icon: Wallet, label: 'Financeiro' },
   { path: '/calendar', icon: CalendarDays, label: 'Agenda' },
   { path: '/pipeline', icon: TrendingUp, label: 'Pipeline' },
+  { path: '/contracts', icon: FileText, label: 'Contratos' },
 ]
 
 export default function Sidebar({ mobileOpen, onClose }) {
