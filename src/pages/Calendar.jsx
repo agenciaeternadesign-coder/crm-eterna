@@ -1,15 +1,46 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Plus, Trash2, CalendarDays, Clock } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Trash2, CalendarDays, Clock, MessageCircle, Check } from 'lucide-react'
 import { useApp } from '../context/AppContext'
 import Modal from '../components/UI/Modal'
 
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
-const TYPE_COLOR = { reuniao: '#3b82f6', prazo: '#ef4444', outro: '#8b5cf6' }
-const TYPE_LABEL = { reuniao: 'Reunião', prazo: 'Prazo/Entrega', outro: 'Outro' }
+const TYPE_COLOR = { reuniao: '#3b82f6', prazo: '#ef4444', visita: '#10b981', outro: '#8b5cf6' }
+const TYPE_LABEL = { reuniao: 'Reunião', prazo: 'Prazo/Entrega', visita: 'Visita p/ Orçamento', outro: 'Outro' }
 
 const emptyForm = {
   title: '', date: '', time: '', type: 'reuniao', clientId: '', description: '',
+  tratamento: 'Sra.', tipo_obra: '', hora_fim: '', morada: '',
+}
+
+function buildVisitaSMS(ev, client, settings) {
+  const tratamento = ev.tratamento || 'Sra.'
+  const nome = client?.name || ev.title || '—'
+  const tipoObra = ev.tipo_obra || '—'
+  const data = ev.date ? ev.date.split('-').reverse().join('/') : '—'
+  const horaInicio = ev.time || '—'
+  const horaFim = ev.hora_fim || '—'
+  const morada = ev.morada || '—'
+  const telefone = settings?.phone || '214 098 779'
+  const waLink = settings?.whatsappLink || ''
+  return `${tratamento} ${nome}! Está confirmada a visita para orçamento, para - ${tipoObra}, no dia ${data}, entre: ${horaInicio} e as ${horaFim}, na ${morada}.\nTeremos todo gosto em ajudar. Para qualquer esclarecimento adicional poderá contactar-nos através do número ${telefone} ou do whatsapp ${waLink}\nAté breve!`
+}
+
+function CopySMSButton({ ev, client, settings }) {
+  const [copied, setCopied] = useState(false)
+  const handleCopy = () => {
+    const msg = buildVisitaSMS(ev, client, settings)
+    navigator.clipboard.writeText(msg).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+  return (
+    <button onClick={handleCopy}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-all ${copied ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-white text-slate-500 border-slate-200 hover:border-green-300 hover:text-green-600 hover:bg-green-50'}`}>
+      {copied ? <><Check size={11}/> Copiado!</> : <><MessageCircle size={11}/> Copiar SMS</>}
+    </button>
+  )
 }
 
 function getDaysInView(year, month) {
@@ -197,7 +228,7 @@ export default function Calendar() {
                           {ev.time && (
                             <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
                               <Clock size={11} />
-                              {ev.time}
+                              {ev.time}{ev.hora_fim ? ` – ${ev.hora_fim}` : ''}
                             </p>
                           )}
                           <span className="inline-block text-[10px] px-2 py-0.5 rounded-full mt-1.5 font-medium"
@@ -205,7 +236,14 @@ export default function Calendar() {
                             {TYPE_LABEL[ev.type]}
                           </span>
                           {client && <p className="text-xs text-slate-400 mt-1">{client.company || client.name}</p>}
+                          {ev.tipo_obra && <p className="text-xs text-slate-500 mt-0.5">Obra: {ev.tipo_obra}</p>}
+                          {ev.morada && <p className="text-xs text-slate-500 mt-0.5 truncate">{ev.morada}</p>}
                           {ev.description && <p className="text-xs text-slate-500 mt-1.5 line-clamp-2">{ev.description}</p>}
+                          {ev.type === 'visita' && (
+                            <div className="mt-2">
+                              <CopySMSButton ev={ev} client={client} settings={settings} />
+                            </div>
+                          )}
                         </div>
                       </div>
                       <button
@@ -252,7 +290,7 @@ export default function Calendar() {
           </div>
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo</label>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {Object.entries(TYPE_LABEL).map(([key, label]) => (
                 <button
                   key={key}
@@ -267,6 +305,37 @@ export default function Calendar() {
               ))}
             </div>
           </div>
+
+          {/* Visita extra fields */}
+          {form.type === 'visita' && (
+            <>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Tratamento</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {['Sra.', 'Sr.'].map(t => (
+                    <button key={t} type="button"
+                      onClick={() => setForm(f => ({ ...f, tratamento: t }))}
+                      className={`py-2 text-sm rounded-xl border transition-all font-medium ${form.tratamento === t ? 'text-white' : 'border-slate-200 text-slate-500 hover:border-slate-300'}`}
+                      style={form.tratamento === t ? { backgroundColor: TYPE_COLOR.visita, borderColor: TYPE_COLOR.visita } : {}}
+                    >{t}</button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Tipo de Obra *</label>
+                <input value={form.tipo_obra} onChange={set('tipo_obra')} placeholder="Ex: Remodelação de cozinha" className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Hora de Fim</label>
+                <input type="time" value={form.hora_fim} onChange={set('hora_fim')} className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1.5">Morada</label>
+                <input value={form.morada} onChange={set('morada')} placeholder="Rua, número, cidade" className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2" />
+              </div>
+            </>
+          )}
+
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1.5">Cliente (opcional)</label>
             <select value={form.clientId} onChange={set('clientId')} className="w-full px-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none bg-white">

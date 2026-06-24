@@ -9,6 +9,7 @@ export const defaultSettings = {
   cnpj: '',
   address: '',
   phone: '',
+  whatsappLink: '',
   contactEmail: '',
   website: '',
   // Interface
