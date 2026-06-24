@@ -369,12 +369,8 @@ export default function Settings() {
               </Field>
             </div>
 
-            <Field icon={Phone} label="Telefone Fixo">
-              <input value={form.phone || ''} onChange={set('phone')} placeholder="214 098 779" className={inputClass} />
-            </Field>
-
-            <Field icon={MessageSquare} label="Link WhatsApp (para SMS de visita)">
-              <input value={form.whatsappLink || ''} onChange={set('whatsappLink')} placeholder="https://wa.me/351912345678" className={inputClass} />
+            <Field icon={Phone} label="Telefone / WhatsApp">
+              <input value={form.phone || ''} onChange={set('phone')} placeholder="(11) 99999-9999" className={inputClass} />
             </Field>
 
             <Field icon={Mail} label="E-mail de Contato">
